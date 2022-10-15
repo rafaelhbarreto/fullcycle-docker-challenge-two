@@ -1,4 +1,4 @@
-version: '3'
+version: '3.6'
 
 services: 
   app: 
@@ -11,3 +11,31 @@ services:
       - .:/usr/app
     tty: true
     entrypoint: ["npm", "start"]
+    depends_on:
+      - database
+    networks:
+      - nodenetwork
+
+  database: 
+    container_name: database
+    platform: linux/x86_64
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - node-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    networks:
+      - nodenetwork
+volumes:
+  node-data:
+
+networks:
+  nodenetwork:
+    driver: bridge
