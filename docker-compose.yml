@@ -1,6 +1,21 @@
 version: '3.6'
 
 services: 
+
+  # Nginx
+  nginx: 
+    build: 
+      context: ./nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "8080:80"
+    networks:
+      - nodenetwork
+    depends_on:
+      - app
+
+  # Node App
   app: 
     build: 
       context: .
@@ -10,12 +25,13 @@ services:
     volumes:
       - .:/usr/app
     tty: true
-    entrypoint: ["npm", "start"]
+    entrypoint: dockerize -wait tcp://database:3306 -timeout 30s npm start
     depends_on:
       - database
     networks:
       - nodenetwork
 
+  # Database     
   database: 
     container_name: database
     platform: linux/x86_64
