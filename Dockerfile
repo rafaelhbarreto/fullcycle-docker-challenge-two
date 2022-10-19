@@ -3,6 +3,11 @@ FROM node:15
 # Define workspace 
 WORKDIR /usr/app
 
+COPY package.json .
+
+# Install project dependencies
+RUN npm install 
+
 # Install Dockerize
 RUN apt-get update && apt-get install -y wget
 
